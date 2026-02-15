@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - System Rejestracji Czasu Pracy</title>
+    <!-- Aero Style v2.0 -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<nav class="navbar">
+    <div class="container">
+        <a asp-controller="TimeEntries" asp-action="Index" class="navbar-brand"><span>⏱️</span> TimeTracker</a>
+        <div class="navbar-menu">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Calendar" asp-action="Index">Kalendarz</a>
+                <a asp-controller="TimeEntries" asp-action="Index">Wpisy</a>
+                
+                <!-- Dropdown Raporty -->
+                <div class="dropdown">
+                    <button class="dropdown-toggle" id="reportsDropdown">Raporty ▼</button>
+                    <div class="dropdown-menu" id="reportsMenu">
+                        <a asp-controller="Reports" asp-action="Summary" class="dropdown-item">Raport zbiorczy</a>
+                        <a asp-controller="Reports" asp-action="Monthly" class="dropdown-item">Raport miesięczny</a>
+                        
+                        @if (User.IsInRole("Employee"))
+                        {
+                            <a asp-controller="NoProjectReport" asp-action="MyEntries" class="dropdown-item" style="color: #eab308;">⚠️ Moje bez projektu</a>
+                        }
+                        
+                        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                        {
+                            <a asp-controller="NoProjectReport" asp-action="AllEntries" class="dropdown-item" style="color: #eab308;">⚠️ Wszystkie bez projektu</a>
+                        }
+                    </div>
+                </div>
+                
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                {
+                    <a asp-controller="Clients" asp-action="Index">Klienci</a>
+                    <a asp-controller="Projects" asp-action="Index">Projekty</a>
+                    <a asp-controller="Employees" asp-action="Index">Pracownicy</a>
+                }
+                <span class="username">👤 @User.Identity.Name</span>
+                <form method="post" asp-controller="Account" asp-action="Logout" style="display:inline;">
+                    <button type="submit" class="btn-logout">Wyloguj</button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login">Logowanie</a>
+                <a asp-controller="Account" asp-action="Register">Rejestracja</a>
+            }
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    @RenderBody()
+</div>
+
+<footer class="footer">
+    <p>&copy; 2026 System Rejestracji Czasu Pracy - Projekt Zaliczeniowy</p>
+</footer>
+
+<script>
+    // Dropdown menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdown = document.querySelector('.dropdown');
+        const dropdownToggle = document.getElementById('reportsDropdown');
+        const dropdownMenu = document.getElementById('reportsMenu');
+        
+        if (dropdown && dropdownToggle && dropdownMenu) {
+            dropdownToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('active');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function() {
+                dropdown.classList.remove('active');
+            });
+            
+            // Prevent closing when clicking inside menu
+            dropdownMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        }
+    });
+</script>
+
+@RenderSection("Scripts", required: false)
+</body>
+</html>

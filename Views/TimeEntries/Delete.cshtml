@@ -1,0 +1,41 @@
+@model TimeTrackerApp.Models.TimeEntry
+
+@{
+    ViewData["Title"] = "Usuń wpis";
+}
+
+<h2>Usuń wpis czasu</h2>
+
+<div class="alert alert-warning">
+    <p><strong>Uwaga!</strong> Czy na pewno chcesz usunąć ten wpis?</p>
+</div>
+
+<div class="card">
+    <dl>
+        <dt>Data</dt>
+        <dd>@Model.EntryDate.ToString("yyyy-MM-dd")</dd>
+
+        <dt>Pracownik</dt>
+        <dd>@Model.Employee.User.FirstName @Model.Employee.User.LastName</dd>
+
+        <dt>Projekt</dt>
+        <dd>@(Model.Project?.Name ?? "(brak)")</dd>
+
+        <dt>Czas</dt>
+        <dd>@Model.StartTime.ToString(@"hh\:mm") – @Model.EndTime.ToString(@"hh\:mm")</dd>
+
+        <dt>Godziny</dt>
+        <dd><strong>@Model.TotalHours.ToString("0.0")h</strong></dd>
+
+        <dt>Opis</dt>
+        <dd>@(string.IsNullOrEmpty(Model.Description) ? "(brak)" : Model.Description)</dd>
+    </dl>
+
+    <form method="post" asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-danger">Usuń wpis</button>
+            <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+        </div>
+    </form>
+</div>

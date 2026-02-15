@@ -1,0 +1,149 @@
+@model IEnumerable<TimeTrackerApp.Models.TimeEntry>
+@using TimeTrackerApp.Models
+
+@{
+    ViewData["Title"] = "Wpisy czasu";
+    var user = ViewContext.HttpContext.User;
+    var isEmployee = user.IsInRole("Employee");
+}
+
+<div style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2 style="margin: 0;">Wpisy czasu</h2>
+            <p class="hint" style="margin-top: 0.5rem;">Historia rejestracji czasu pracy</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <a asp-controller="Calendar" asp-action="Index" class="btn btn-secondary">Kalendarz</a>
+            <a asp-action="Create" class="btn btn-primary">+ Dodaj wpis</a>
+        </div>
+    </div>
+
+    <!-- ✅ ADDED: Formularz filtrowania -->
+    <div style="background: var(--background-secondary); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+        <form method="get" asp-action="Index">
+            @if (isEmployee)
+            {
+                <!-- Pracownik widzi tylko filtr projektu -->
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: end;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Projekt</label>
+                        <select name="projectId" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
+                            <option value="">Wszystkie projekty</option>
+                            @foreach (var project in (List<Project>)ViewBag.Projects)
+                            {
+                                <option value="@project.Id" selected="@(ViewBag.ProjectId == project.Id ? "selected" : null)">
+                                    @project.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit" class="btn btn-primary">🔍 Filtruj</button>
+                        <a asp-action="Index" class="btn btn-secondary">✖️ Wyczyść</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Manager/Admin widzi filtry pracownika i projektu -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Pracownik</label>
+                        <select name="employeeId" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
+                            <option value="">Wszyscy pracownicy</option>
+                            @foreach (var employee in (List<Employee>)ViewBag.Employees)
+                            {
+                                <option value="@employee.Id" selected="@(ViewBag.EmployeeId == employee.Id ? "selected" : null)">
+                                    @employee.User.FirstName @employee.User.LastName
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Projekt</label>
+                        <select name="projectId" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px;">
+                            <option value="">Wszystkie projekty</option>
+                            @foreach (var project in (List<Project>)ViewBag.Projects)
+                            {
+                                <option value="@project.Id" selected="@(ViewBag.ProjectId == project.Id ? "selected" : null)">
+                                    @project.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit" class="btn btn-primary">🔍 Filtruj</button>
+                        <a asp-action="Index" class="btn btn-secondary">✖️ Wyczyść</a>
+                    </div>
+                </div>
+            }
+        </form>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Pracownik</th>
+                <th>Projekt</th>
+                <th>Czas</th>
+                <th>Godziny</th>
+                <th>Opis</th>
+                <th>Dodane przez</th>
+                <th style="text-align: center;">Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in Model)
+            {
+                var hasNoProject = entry.ProjectId == null;
+                <tr class="@(hasNoProject ? "no-project-entry-row" : "")">
+                    <td>@entry.EntryDate.ToString("yyyy-MM-dd")</td>
+                    <td><strong>@entry.Employee.User.LastName @entry.Employee.User.FirstName</strong></td>
+                    <td>
+                        @if (entry.Project != null)
+                        {
+                            @entry.Project.Name
+                        }
+                        else
+                        {
+                            <span style="color: var(--text-tertiary);">(brak)</span>
+                        }
+                    </td>
+                    <td>@entry.StartTime.ToString(@"hh\:mm") – @entry.EndTime.ToString(@"hh\:mm")</td>
+                    <td><strong>@entry.TotalHours.ToString("0.0")h</strong></td>
+                    <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        @if (string.IsNullOrEmpty(entry.Description))
+                        {
+                            <span style="color: var(--text-tertiary);">(brak opisu)</span>
+                        }
+                        else
+                        {
+                            @entry.Description
+                        }
+                    </td>
+                    <td>
+                        <span style="font-size: 0.8125rem; color: var(--text-tertiary);">
+                            ✍️ @(entry.CreatedByUser != null ? $"{entry.CreatedByUser.FirstName} {entry.CreatedByUser.LastName}" : "System")
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-secondary" style="font-size: 0.875rem; padding: 0.375rem 0.75rem;">Edytuj</a>
+                            <a asp-action="Delete" asp-route-id="@entry.Id" class="btn btn-danger" style="font-size: 0.875rem; padding: 0.375rem 0.75rem;">Usuń</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (!Model.Any())
+    {
+        <div style="text-align: center; padding: 3rem; color: var(--text-tertiary);">
+            <p>Brak wpisów czasu.</p>
+            <a asp-action="Create" class="btn btn-primary" style="margin-top: 1rem;">Dodaj pierwszy wpis</a>
+        </div>
+    }
+</div>

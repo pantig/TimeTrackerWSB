@@ -1,0 +1,72 @@
+@using TimeTrackerApp.Models.ViewModels
+@model TimeEntryViewModel
+
+@{
+    ViewData["Title"] = "Nowy wpis czasu";
+}
+
+<div class="form-container">
+    <h1>Nowy wpis czasu</h1>
+
+    <form asp-action="Create" method="post" class="form">
+        <div asp-validation-summary="All" class="error-summary"></div>
+
+        <div class="form-group">
+            <label asp-for="EmployeeId">Pracownik</label>
+            <select asp-for="EmployeeId" class="form-control">
+                @foreach (var employee in Model.Employees)
+                {
+                    <option value="@employee.Id">@employee.User.FirstName @employee.User.LastName (@employee.Position)</option>
+                }
+            </select>
+            <span asp-validation-for="EmployeeId" class="error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ProjectId">Projekt</label>
+            <select asp-for="ProjectId" class="form-control">
+                <option value="">-- Brak projektu --</option>
+                @foreach (var project in Model.Projects)
+                {
+                    <option value="@project.Id">@project.Name</option>
+                }
+            </select>
+            <span asp-validation-for="ProjectId" class="error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="EntryDate">Data</label>
+            <input asp-for="EntryDate" class="form-control" type="date" />
+            <span asp-validation-for="EntryDate" class="error"></span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="StartTime">Od</label>
+                <input asp-for="StartTime" class="form-control" type="time" />
+                <span asp-validation-for="StartTime" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EndTime">Do</label>
+                <input asp-for="EndTime" class="form-control" type="time" />
+                <span asp-validation-for="EndTime" class="error"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description">Opis</label>
+            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Opis pracy..."></textarea>
+            <span asp-validation-for="Description" class="error"></span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Zapisz</button>
+            <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

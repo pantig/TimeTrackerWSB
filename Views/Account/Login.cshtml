@@ -1,0 +1,49 @@
+@using TimeTrackerApp.Models.ViewModels
+@model LoginViewModel
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Logowanie";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h1>Logowanie</h1>
+        
+        <form asp-action="Login" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" class="form">
+            <div asp-validation-summary="All" class="error-summary"></div>
+
+            <div class="form-group">
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" class="form-control" placeholder="email@example.com" />
+                <span asp-validation-for="Email" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password">Hasło</label>
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input asp-for="RememberMe" type="checkbox" />
+                    Pamiętaj mnie
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Zaloguj</button>
+        </form>
+
+        <p class="auth-link">
+            Nie masz konta? <a asp-action="Register">Zarejestruj się</a>
+        </p>
+
+        <div class="demo-credentials">
+            <h4>💡 Dane demonstracyjne:</h4>
+            <p><strong>Admin:</strong> admin@test.com / Admin123!</p>
+            <p><strong>Manager:</strong> manager@test.com / Manager123!</p>
+            <p><strong>Employee:</strong> employee@test.com / Employee123!</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Wyłączenie nullable warnings -->
+    <NoWarn>$(NoWarn);CS8601;CS8602;CS8603;CS8618</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
+    <PackageReference Include="EPPlus" Version="7.0.0" />
+  </ItemGroup>
+
+  <!-- Exclude test project folder from main project compilation -->
+  <ItemGroup>
+    <Compile Remove="TimeTrackerApp.Tests/**" />
+    <EmbeddedResource Remove="TimeTrackerApp.Tests/**" />
+    <None Remove="TimeTrackerApp.Tests/**" />
+  </ItemGroup>
+
+  <!-- ✅ FIXED: Kopiowanie plików migracji SQL do katalogu output -->
+  <ItemGroup>
+    <None Update="Migrations\*.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,60 @@
+@model TimeTrackerApp.Models.Employee
+
+@{
+    ViewData["Title"] = "Szczegóły pracownika";
+}
+
+<h2>Szczegóły pracownika</h2>
+
+<div class="card">
+    <dl>
+        <dt>Imię i nazwisko</dt>
+        <dd><strong>@Model.User.FirstName @Model.User.LastName</strong></dd>
+
+        <dt>Email</dt>
+        <dd>@Model.User.Email</dd>
+
+        <dt>Stanowisko</dt>
+        <dd>@Model.Position</dd>
+
+        <dt>Departament</dt>
+        <dd>@Model.Department</dd>
+
+        <dt>Data zatrudnienia</dt>
+        <dd>@Model.HireDate.ToString("yyyy-MM-dd")</dd>
+
+        <dt>Status</dt>
+        <dd>
+            @if (Model.IsActive)
+            {
+                <span class="badge badge-success">Aktywny</span>
+            }
+            else
+            {
+                <span class="badge badge-secondary">Nieaktywny</span>
+            }
+        </dd>
+    </dl>
+
+    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edytuj</a>
+        <a asp-action="Index" class="btn btn-secondary">Powrót do listy</a>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 2rem;">
+    <h3 style="margin-bottom: 1rem;">Projekty</h3>
+    @if (Model.Projects.Any())
+    {
+        <ul style="margin: 0; padding-left: 1.5rem;">
+            @foreach (var project in Model.Projects)
+            {
+                <li style="margin-bottom: 0.5rem;">@project.Name</li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p style="color: var(--text-tertiary);">Brak przypisanych projektów.</p>
+    }
+</div>
