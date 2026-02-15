@@ -8,9 +8,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d6fe9a1c-708c-4d09-9a17-a0eab3a43960" name="Changes" comment="Initial commit">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.TimeTrackerApp/.idea/projectSettingsUpdater.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.TimeTrackerApp/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.TimeTrackerApp/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DEPLOYMENT.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MIGRATION_NOTES.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REFACTORING.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/BUGFIX_TESTING_REPORT.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/FEATURE_CALENDAR_PRECISE_TIME.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/FEATURE_NO_PROJECT_ENTRIES.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/FEATURE_PROJECT_MANAGERS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/FEATURE_PROJECT_REPORTS.md" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,12 +40,12 @@
     &quot;assignee&quot;: &quot;pantig&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/pantig/TimeTrackerApp.git&quot;,
-    &quot;accountId&quot;: &quot;a26764c4-ad44-4e99-bb76-8a85c2cd547b&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/pantig/TimeTrackerWSB.git",
+    "accountId": "a26764c4-ad44-4e99-bb76-8a85c2cd547b"
   }
-}</component>
+}]]></component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Controllers/AccountController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Controllers/EmployeesController.cs" root0="FORCE_HIGHLIGHTING" />
@@ -141,7 +147,7 @@
       <workItem from="1771103067949" duration="10371000" />
       <workItem from="1771152370985" duration="14333000" />
       <workItem from="1771173830318" duration="12738000" />
-      <workItem from="1771188848526" duration="2372000" />
+      <workItem from="1771188848526" duration="3009000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />

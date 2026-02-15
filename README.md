@@ -43,25 +43,6 @@ System do rejestracji czasu pracy pracowników w projektach.
 - **Frontend**: Razor Views, CSS (custom), JavaScript (vanilla)
 - **Eksport**: EPPlus (Excel)
 
-## Struktura projektów
-
-```
-TimeTrackerApp/
-├── Controllers/         # Kontrolery MVC
-├── Data/                # DbContext i konfiguracja EF
-├── Migrations/          # Migracje bazy danych
-├── Models/              # Modele danych i ViewModels
-├── Services/            # Logika biznesowa (np. generowanie raportów)
-├── Views/               # Widoki Razor
-├── wwwroot/             # Pliki statyczne (CSS, JS)
-└── docs/                # Dokumentacja techniczna
-```
-
-## Dokumentacja
-
-- [Opiekunowie projektów (Project Managers)](docs/FEATURE_PROJECT_MANAGERS.md)
-- [Refactoring i uproszczenie kodu](docs/REFACTORING_SIMPLIFICATION.md)
-
 ## Instalacja i uruchomienie
 
 ### Wymagania
@@ -81,17 +62,12 @@ cd TimeTrackerApp
 dotnet restore
 ```
 
-3. Aktualizacja bazy danych (uruchomienie migracji):
-```bash
-dotnet ef database update
-```
-
-4. Uruchomienie aplikacji:
+3. Uruchomienie aplikacji:
 ```bash
 dotnet run
 ```
 
-5. Otwórz przeglądarkę:
+4. Otwórz przeglądarkę:
 ```
 http://localhost:5000
 ```
@@ -100,24 +76,8 @@ http://localhost:5000
 
 Po pierwszym uruchomieniu system tworzy konta testowe:
 
-- **Admin**: admin@test.pl / haslo123
-- **Manager**: kierownik@test.pl / haslo123
-- **Pracownik 1**: kamil@test.pl / haslo123
-- **Pracownik 2**: piotr@test.pl / haslo123
+            Dane demonstracyjne:
+            Admin: admin@test.com / Admin123!
+            Manager: manager@test.com / Manager123!
+            Employee: employee@test.com / Employee123!
 
-## Branches
-
-- `master` - wersja produkcyjna
-- `feature/project-managers` - Opiekunowie projektów
-- `refactor/code-simplification-and-polish` - Refactoring i uproszczenia
-- `feature/weekly-calendar-ui-fixes` - Poprawki UI kalendarza
-- `feature/monthly-reports-and-ui-improvements` - Raporty miesięczne
-- `feature/employee-management-and-audit` - Zarządzanie pracownikami
-
-## Autor
-
-Projekt stworzony jako system zarządzania czasem pracy dla małych i średnich zespołów.
-
-## Licencja
-
-Projekt prywatny.
