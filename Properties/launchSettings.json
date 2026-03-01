@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "TimeTrackerApp": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:7817;http://localhost:7818"
+    }
+  }
+}
