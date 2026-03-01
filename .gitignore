@@ -3,3 +3,25 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Environment variables
+.env
+
+# Docker volumes
+postgres_data/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Logs
+logs/
+*.log

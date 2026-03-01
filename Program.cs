@@ -9,9 +9,26 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Database
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Database - detect provider from connection string
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+}
+
+// Use PostgreSQL if connection string contains "Host=", otherwise SQLite
+if (connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase))
+{
+    Console.WriteLine("[INFO] Using PostgreSQL database provider");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(connectionString));
+}
+else
+{
+    Console.WriteLine("[INFO] Using SQLite database provider");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite(connectionString));
+}
 
 // Services
 builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
@@ -77,17 +94,35 @@ using (var scope = app.Services.CreateScope())
             // Ensure database is created
             db.Database.EnsureCreated();
             
-            // Run custom SQL migrations
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            if (!string.IsNullOrEmpty(connectionString))
+            // Run custom SQL migrations (only for SQLite - PostgreSQL uses EF migrations)
+            if (db.Database.ProviderName?.Contains("Sqlite") == true)
             {
+                var sqliteConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+                if (!string.IsNullOrEmpty(sqliteConnectionString))
+                {
+                    try
+                    {
+                        MigrationRunner.RunMigrations(sqliteConnectionString);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[ERROR] Error running SQLite migrations: {ex.Message}");
+                        throw;
+                    }
+                }
+            }
+            else if (db.Database.ProviderName?.Contains("Npgsql") == true)
+            {
+                // For PostgreSQL, use EF Core migrations
                 try
                 {
-                    MigrationRunner.RunMigrations(connectionString);
+                    Console.WriteLine("[INFO] Applying PostgreSQL migrations...");
+                    db.Database.Migrate();
+                    Console.WriteLine("[SUCCESS] PostgreSQL migrations applied.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[ERROR] Error running migrations: {ex.Message}");
+                    Console.WriteLine($"[ERROR] Error applying PostgreSQL migrations: {ex.Message}");
                     throw;
                 }
             }
