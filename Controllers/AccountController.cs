@@ -5,16 +5,19 @@ using System.Security.Claims;
 using TimeTrackerApp.Data;
 using TimeTrackerApp.Models;
 using TimeTrackerApp.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace TimeTrackerApp.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(ApplicationDbContext context)
+        public AccountController(ApplicationDbContext context, ILogger<AccountController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -98,28 +101,64 @@ namespace TimeTrackerApp.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
-
-            if (_context.Users.Any(u => u.Email == model.Email))
             {
+                _logger.LogWarning("Registration failed - invalid model state");
+                return View(model);
+            }
+
+            // Check if email already exists
+            if (await _context.Users.AnyAsync(u => u.Email == model.Email))
+            {
+                _logger.LogWarning($"Registration failed - email already exists: {model.Email}");
                 ModelState.AddModelError("Email", "Adres email jest już zarejestrowany");
                 return View(model);
             }
 
-            var user = new User
+            try
             {
-                Email = model.Email,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
-                Role = UserRole.Employee,
-                IsActive = true
-            };
+                var user = new User
+                {
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.Password),
+                    Role = UserRole.Employee,
+                    IsActive = true
+                };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Login");
+                _logger.LogInformation($"Creating new user: {user.Email}");
+                _context.Users.Add(user);
+                
+                var changesSaved = await _context.SaveChangesAsync();
+                _logger.LogInformation($"User created successfully. Changes saved: {changesSaved}");
+                
+                // ✅ FIXED: Verify user was actually saved
+                var verifyUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+                if (verifyUser == null)
+                {
+                    _logger.LogError($"User creation verification failed - user not found in database: {model.Email}");
+                    ModelState.AddModelError("", "Błąd podczas tworzenia konta. Spróbuj ponownie.");
+                    return View(model);
+                }
+                
+                _logger.LogInformation($"User verified in database. ID: {verifyUser.Id}");
+                
+                // ✅ FIXED: Don't auto-login, redirect to login page
+                TempData["SuccessMessage"] = "Konto zostało utworzone. Możesz się teraz zalogować.";
+                return RedirectToAction("Login");
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, $"Database error during user registration: {model.Email}");
+                ModelState.AddModelError("", "Błąd bazy danych. Spróbuj ponownie.");
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Unexpected error during user registration: {model.Email}");
+                ModelState.AddModelError("", "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.");
+                return View(model);
+            }
         }
 
         [HttpPost]
