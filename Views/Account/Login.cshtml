@@ -10,6 +10,13 @@
     <div class="auth-card">
         <h1>Logowanie</h1>
         
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+        
         <form asp-action="Login" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" class="form">
             <div asp-validation-summary="All" class="error-summary"></div>
 
