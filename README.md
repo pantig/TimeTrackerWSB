@@ -83,16 +83,39 @@ docker-compose ps
 http://localhost:5000
 ```
 
+#### Trwałość danych (Persistent Storage)
+
+**WAŻNE:** Dane PostgreSQL są zapisywane w lokalnym katalogu `./postgres-data` na hoście.
+
+- **Katalog danych:** `./postgres-data` (mapowany na `/var/lib/postgresql/data` w kontenerze)
+- **Automatyczne tworzenie:** Katalog zostanie utworzony automatycznie przy pierwszym uruchomieniu
+- **Backup:** Wystarczy skopiować cały katalog `postgres-data`
+- **Usunięcie danych:** Usuń katalog `postgres-data` ręcznie (nie jest usuwany przez `docker-compose down`)
+
+```bash
+# Pełne usunięcie danych (UWAGA: usuwa całą bazę!)
+rm -rf postgres-data/
+
+# Backup danych (kopiowanie katalogu)
+cp -r postgres-data/ postgres-data-backup-$(date +%Y%m%d)/
+
+# Restore danych (kopiowanie z backupu)
+rm -rf postgres-data/
+cp -r postgres-data-backup-20260301/ postgres-data/
+```
+
 #### Zarządzanie Docker
 
 **Zatrzymanie aplikacji:**
 ```bash
 docker-compose down
+# Dane w postgres-data/ są zachowane!
 ```
 
-**Zatrzymanie z usunięciem danych:**
+**Zatrzymanie z usunięciem wolumenów Docker:**
 ```bash
 docker-compose down -v
+# Dane w postgres-data/ są zachowane! (to lokalny katalog, nie wolumen Docker)
 ```
 
 **Podgląd logów:**
@@ -123,7 +146,7 @@ psql -h localhost -p 5432 -U timetracker_user -d timetracker
 docker-compose exec app psql -h postgres -U timetracker_user -d timetracker
 ```
 
-**Backup bazy danych:**
+**Backup bazy danych (SQL dump):**
 ```bash
 docker-compose exec postgres pg_dump -U timetracker_user timetracker > backup.sql
 ```
@@ -226,6 +249,7 @@ TimeTrackerWSB/
 ├── Views/                # Widoki Razor
 ├── wwwroot/              # Pliki statyczne (CSS, JS)
 ├── TimeTrackerApp.Tests/ # Testy jednostkowe
+├── postgres-data/        # Dane PostgreSQL (gitignore)
 ├── docker-compose.yml    # Konfiguracja Docker
 ├── Dockerfile            # Obraz Docker aplikacji
 └── Program.cs            # Punkt wejścia aplikacji
@@ -248,8 +272,9 @@ ASPNETCORE_ENVIRONMENT=Production
 1. **Zmień hasło bazy danych** w `.env`
 2. **Ustaw HTTPS** (wymaga certyfikatu SSL)
 3. **Skonfiguruj firewall** - ogranicz dostęp do portu 5432 PostgreSQL
-4. **Regularne backupy bazy danych**
+4. **Regularne backupy bazy danych** - kopiuj katalog `postgres-data/`
 5. **Monitoring logów** - sprawdzaj logi aplikacji i PostgreSQL
+6. **Uprawnienia katalogu** - ustaw odpowiednie uprawnienia dla `postgres-data/`
 
 ### Wydajność
 
@@ -300,6 +325,15 @@ ports:
 
 # Zrestartuj
 docker-compose up -d
+```
+
+### Problem: Brak uprawnień do katalogu postgres-data
+
+**Rozwiązanie:**
+```bash
+# Ustaw odpowiednie uprawnienia (właściciel: użytkownik postgres w kontenerze - UID 999)
+sudo chown -R 999:999 postgres-data/
+sudo chmod -R 700 postgres-data/
 ```
 
 ## Licencja
