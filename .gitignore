@@ -9,6 +9,9 @@ riderModule.iml
 *.db-shm
 *.db-wal
 
+# PostgreSQL data directory
+postgres-data/
+
 # Environment variables
 .env
 
