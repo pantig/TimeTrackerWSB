@@ -11,7 +11,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # Map to local directory for data persistence
+      - ./postgres-data:/var/lib/postgresql/data
       - ./Migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U timetracker_user -d timetracker"]
@@ -39,10 +40,6 @@ services:
     restart: unless-stopped
     networks:
       - timetracker-network
-
-volumes:
-  postgres_data:
-    driver: local
 
 networks:
   timetracker-network:
